@@ -174,6 +174,13 @@ impl AnimationEngine {
 
         // Process all file changes
         for (index, change) in metadata.changes.iter().enumerate() {
+            // Open file in editor
+            if index > 0 {
+                self.steps.push(AnimationStep::Pause { duration_ms: 1500 });
+            }
+            self.add_terminal_command(&format!("open {}", change.path));
+            self.steps.push(AnimationStep::Pause { duration_ms: 500 });
+
             // Add file switch step
             let content = change.old_content.clone().unwrap_or_default();
             self.steps.push(AnimationStep::SwitchFile {
@@ -182,21 +189,16 @@ impl AnimationEngine {
             });
 
             // Add pause before starting file animation
-            self.steps.push(AnimationStep::Pause { duration_ms: 1000 });
+            self.steps.push(AnimationStep::Pause { duration_ms: 800 });
 
             // Generate animation steps for this file
             self.generate_steps_for_file(change);
 
-            // Add pause between files
-            if index < metadata.changes.len() - 1 {
-                self.steps.push(AnimationStep::Pause { duration_ms: 2000 });
-            }
+            // Git add this file after editing
+            self.steps.push(AnimationStep::Pause { duration_ms: 1000 });
+            self.add_terminal_command(&format!("git add {}", change.path));
+            self.steps.push(AnimationStep::Pause { duration_ms: 500 });
         }
-
-        // Git add
-        self.steps.push(AnimationStep::Pause { duration_ms: 2000 });
-        self.add_terminal_command("git add .");
-        self.steps.push(AnimationStep::Pause { duration_ms: 500 });
 
         // Git commit
         let commit_message = metadata.message.lines().next().unwrap_or("Update");
