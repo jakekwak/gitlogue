@@ -235,8 +235,33 @@ impl<'a> Widget for SelectableParagraph<'a> {
             }
         }
 
+        // Calculate scroll offset to keep selected line centered
+        let scroll_offset = if let Some(selected_idx) = self.selected_line {
+            // Find the first display line of the selected original line
+            let selected_display_line = wrapped_lines_with_indices
+                .iter()
+                .position(|(orig_idx, _, _, _)| *orig_idx == selected_idx)
+                .unwrap_or(0);
+
+            let total_lines = wrapped_lines_with_indices.len();
+
+            if total_lines <= height {
+                // All lines fit, no scrolling needed
+                0
+            } else {
+                // Keep selected line in the middle of viewport
+                let preferred_position = height / 2;
+                let offset = selected_display_line.saturating_sub(preferred_position);
+                let max_offset = total_lines.saturating_sub(height);
+                offset.min(max_offset)
+            }
+        } else {
+            0
+        };
+
         let visible_lines: Vec<_> = wrapped_lines_with_indices
             .into_iter()
+            .skip(scroll_offset)
             .take(height)
             .collect();
 
