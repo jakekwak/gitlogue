@@ -1,10 +1,11 @@
 use crate::animation::{ActivePane, AnimationEngine};
 use crate::theme::Theme;
+use crate::widgets::SelectableParagraph;
 use ratatui::{
     layout::Rect,
     style::{Modifier, Style},
     text::{Line, Span},
-    widgets::{Block, Padding, Paragraph, Wrap},
+    widgets::{Block, Padding},
     Frame,
 };
 
@@ -14,12 +15,7 @@ impl TerminalPane {
     pub fn render(&self, f: &mut Frame, area: Rect, engine: &AnimationEngine, theme: &Theme) {
         let block = Block::default()
             .style(Style::default().bg(theme.background_right))
-            .padding(Padding {
-                left: 2,
-                right: 2,
-                top: 1,
-                bottom: 1,
-            });
+            .padding(Padding::vertical(1));
 
         // Get visible lines based on area height (subtract padding)
         let content_height = area.height.saturating_sub(2) as usize; // Subtract top and bottom padding
@@ -71,9 +67,10 @@ impl TerminalPane {
             vec![Line::from("")]
         };
 
-        let content = Paragraph::new(lines)
+        let content = SelectableParagraph::new(lines)
             .block(block)
-            .wrap(Wrap { trim: false });
+            .background_style(Style::default().bg(theme.background_right))
+            .padding(Padding::horizontal(2));
         f.render_widget(content, area);
     }
 }

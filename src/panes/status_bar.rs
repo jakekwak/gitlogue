@@ -1,10 +1,11 @@
 use crate::git::CommitMetadata;
 use crate::theme::Theme;
+use crate::widgets::SelectableParagraph;
 use ratatui::{
     layout::Rect,
     style::Style,
     text::{Line, Span},
-    widgets::{Block, Padding, Paragraph, Wrap},
+    widgets::{Block, Padding},
     Frame,
 };
 
@@ -20,12 +21,7 @@ impl StatusBarPane {
     ) {
         let block = Block::default()
             .style(Style::default().bg(theme.background_left))
-            .padding(Padding {
-                left: 2,
-                right: 2,
-                top: 1,
-                bottom: 1,
-            });
+            .padding(Padding::vertical(1));
 
         let status_text = if let Some(meta) = metadata {
             let hash_short = &meta.hash[..7.min(meta.hash.len())];
@@ -64,9 +60,10 @@ impl StatusBarPane {
             )])]
         };
 
-        let content = Paragraph::new(status_text)
+        let content = SelectableParagraph::new(status_text)
             .block(block)
-            .wrap(Wrap { trim: false });
+            .background_style(Style::default().bg(theme.background_left))
+            .padding(Padding::horizontal(2));
 
         f.render_widget(content, area);
     }
