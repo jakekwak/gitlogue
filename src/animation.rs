@@ -353,6 +353,24 @@ impl AnimationEngine {
                 continue;
             }
 
+            // For renamed/moved files, skip editor animation and only run mv + git add
+            if matches!(change.status, FileStatus::Renamed) {
+                self.steps.push(AnimationStep::Pause {
+                    duration_ms: (self.speed_ms as f64 * GIT_ADD_PAUSE) as u64,
+                });
+                if let Some(old_path) = &change.old_path {
+                    self.add_terminal_command(&format!("mv {} {}", old_path, change.path));
+                    self.steps.push(AnimationStep::Pause {
+                        duration_ms: (self.speed_ms as f64 * GIT_ADD_CMD_PAUSE) as u64,
+                    });
+                }
+                self.add_terminal_command(&format!("git add {}", change.path));
+                self.steps.push(AnimationStep::Pause {
+                    duration_ms: (self.speed_ms as f64 * GIT_ADD_CMD_PAUSE) as u64,
+                });
+                continue;
+            }
+
             // Open file in editor
             if index == 0 {
                 self.steps.push(AnimationStep::Pause {
