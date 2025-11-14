@@ -56,7 +56,12 @@ See the [Installation Guide](docs/installation.md) for more options and troubles
 📺 **Presentations** — Replay real commit histories live  
 🎬 **Content Creation** — Record demos with VHS or asciinema  
 🎨 **Desktop Ricing** — A living decoration for your terminal  
-💼 **Look Busy Mode** — Appear productive during meetings  
+💼 **Look Busy Mode** — Appear productive during meetings
+
+> [!WARNING]
+> **Not a True Screensaver** — gitlogue does not include traditional screensaver functions like power management or screen blanking. It's purely a visual display tool.
+>
+> **OLED Burn-in Risk** — Static elements (like the editor background and border lines) may cause burn-in on OLED displays over extended periods. LCD displays are generally safe from this issue.
 
 ### Quick Start
 
