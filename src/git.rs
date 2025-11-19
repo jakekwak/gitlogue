@@ -19,6 +19,7 @@ const EXCLUDED_FILES: &[&str] = &[
     "package-lock.json",
     "pnpm-lock.yaml",
     "bun.lock",
+    "bun.lockb",
     // Rust
     "Cargo.lock",
     // Ruby
