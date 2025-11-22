@@ -799,7 +799,7 @@ mod tests {
     fn test_user_patterns_integration() {
         // Test all pattern types in one test since OnceLock can only be set once
         let patterns = vec![
-            "*.png".to_string(),
+            "*.svg".to_string(),
             "*.ipynb".to_string(),
             "dist/**".to_string(),
             "node_modules/**".to_string(),
@@ -809,10 +809,10 @@ mod tests {
         let _ = init_ignore_patterns(&patterns);
 
         // Test file extension patterns
-        assert!(should_exclude_file("image.png"));
+        assert!(should_exclude_file("diagram.svg"));
         assert!(should_exclude_file("path/to/notebook.ipynb"));
-        assert!(should_exclude_file("screenshot.png"));
-        assert!(!should_exclude_file("image.jpg"));
+        assert!(should_exclude_file("assets/icon.svg"));
+        assert!(!should_exclude_file("image.png"));
         assert!(!should_exclude_file("script.py"));
 
         // Test directory patterns
