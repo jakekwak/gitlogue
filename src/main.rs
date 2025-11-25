@@ -26,7 +26,7 @@ pub enum PlaybackOrder {
 #[derive(Parser, Debug)]
 #[command(
     name = "gitlogue",
-    version = "0.3.0",
+    version,
     about = "A Git history screensaver - watch your code rewrite itself",
     long_about = "gitlogue is a terminal-based screensaver that replays Git commits as if a ghost developer were typing each change by hand. Characters appear, vanish, and transform with natural pacing and syntax highlighting."
 )]
