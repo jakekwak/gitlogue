@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] - 2025-11-25
+
+### ✨ Features
+
+- feat: add glibc version check to install script ([6cfece8](https://github.com/unhappychoice/gitlogue/commit/6cfece8))
+
+### 🐛 Bug Fixes
+
+- fix: use ubuntu-latest for Linux release builds ([2eb6d85](https://github.com/unhappychoice/gitlogue/commit/2eb6d85))
+
+### 📝 Other Changes
+
+- chore: bump version to v0.4.1 ([87f0d0c](https://github.com/unhappychoice/gitlogue/commit/87f0d0c))
+- docs: add troubleshooting for glibc version errors ([77553a3](https://github.com/unhappychoice/gitlogue/commit/77553a3))
+- chore: update flake.nix hashes for v0.4.0 ([5467d70](https://github.com/unhappychoice/gitlogue/commit/5467d70))
+
+
 ## [0.4.0] - 2025-11-25
 
 ### ✨ Features
@@ -25,7 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 📝 Other Changes
 
-- chore: bump version to v0.4.0 ([342a19f](https://github.com/unhappychoice/gitlogue/commit/342a19f))
+- chore: bump version to v0.4.0 ([868bc89](https://github.com/unhappychoice/gitlogue/commit/868bc89))
 - docs: add behavior notes for --author filtering ([12cf5a1](https://github.com/unhappychoice/gitlogue/commit/12cf5a1))
 - refactor: extract magic numbers and fix step discontinuity ([e1624aa](https://github.com/unhappychoice/gitlogue/commit/e1624aa))
 - perf: improve scrolling speed in large files ([f39f158](https://github.com/unhappychoice/gitlogue/commit/f39f158))
