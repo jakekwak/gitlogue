@@ -39,7 +39,15 @@ pacman -S gitlogue
 ### Using Nix
 
 ```bash
+# Run directly without installation
 nix run github:unhappychoice/gitlogue
+
+# Or install to your profile
+nix profile install github:unhappychoice/gitlogue
+
+# For flake-based configurations, add to your inputs:
+# inputs.gitlogue.url = "github:unhappychoice/gitlogue";
+# Then use: inputs.gitlogue.packages.${system}.default
 ```
 
 ### From Source
