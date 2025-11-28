@@ -63,7 +63,7 @@ See the [Installation Guide](docs/installation.md) for more options and troubles
 ## Features
 
 🎬 **Commit Replay as Animation** — Realistic typing, cursor movement, deletions, and file operations  
-🎨 **Tree-sitter Syntax Highlighting** — 26 languages supported  
+🎨 **Tree-sitter Syntax Highlighting** — 29 languages supported  
 🌳 **Project File Tree** — Directory structure with change statistics  
 🖥️ **Screensaver Mode** — Endless random commit playback  
 🎭 **Themes** — 9 built-in themes + full customization support  
@@ -145,7 +145,7 @@ See the [Configuration Guide](docs/configuration.md) for full options and exampl
 
 ## Supported Languages
 
-Rust, TypeScript, JavaScript, Python, Go, Ruby, Swift, Kotlin, Java, PHP, C#, C, C++, Haskell, Dart, Scala, Clojure, Zig, Elixir, Erlang, HTML, CSS, JSON, Markdown, YAML, XML
+Bash, C, C#, C++, Clojure, CSS, Dart, Elixir, Erlang, Go, Haskell, HTML, Java, JavaScript, JSON, Kotlin, Lua, Markdown, PHP, Python, Ruby, Rust, Scala, Svelte, Swift, TypeScript, XML, YAML, Zig
 
 ## Documentation
 

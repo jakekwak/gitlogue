@@ -21,6 +21,7 @@ pub mod python;
 pub mod ruby;
 pub mod rust;
 pub mod scala;
+pub mod svelte;
 pub mod swift;
 pub mod typescript;
 pub mod xml;
@@ -59,6 +60,7 @@ pub fn get_language(path: &Path) -> Option<(Language, &'static str)> {
         "rb" | "rbw" | "rake" | "gemspec" => Some((ruby::language(), ruby::HIGHLIGHT_QUERY)),
         "rs" => Some((rust::language(), rust::HIGHLIGHT_QUERY)),
         "scala" | "sc" | "sbt" => Some((scala::language(), scala::HIGHLIGHT_QUERY)),
+        "svelte" => Some((svelte::language(), svelte::HIGHLIGHT_QUERY)),
         "swift" => Some((swift::language(), swift::HIGHLIGHT_QUERY)),
         "ts" | "tsx" | "mts" | "cts" => Some((typescript::language(), typescript::HIGHLIGHT_QUERY)),
         "xml" | "svg" | "xsl" | "xslt" => Some((xml::language(), xml::HIGHLIGHT_QUERY)),
