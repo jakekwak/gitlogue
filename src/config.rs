@@ -17,6 +17,8 @@ pub struct Config {
     pub loop_playback: bool,
     #[serde(default = "default_ignore_patterns")]
     pub ignore_patterns: Vec<String>,
+    #[serde(default)]
+    pub speed_rules: Vec<String>,
 }
 
 fn default_theme() -> String {
@@ -52,6 +54,7 @@ impl Default for Config {
             order: default_order(),
             loop_playback: default_loop(),
             ignore_patterns: default_ignore_patterns(),
+            speed_rules: Vec::new(),
         }
     }
 }
@@ -100,6 +103,13 @@ impl Config {
             }
             doc["ignore_patterns"] = toml_edit::value(array);
 
+            // Update speed_rules as array
+            let mut speed_array = toml_edit::Array::new();
+            for rule in &self.speed_rules {
+                speed_array.push(rule.as_str());
+            }
+            doc["speed_rules"] = toml_edit::value(speed_array);
+
             doc.to_string()
         } else {
             // Create new config with comments
@@ -112,6 +122,17 @@ impl Config {
                     .map(|p| format!("\"{}\"", p))
                     .collect();
                 format!("[{}]", patterns.join(", "))
+            };
+
+            let speed_rules_str = if self.speed_rules.is_empty() {
+                "[]".to_string()
+            } else {
+                let rules: Vec<String> = self
+                    .speed_rules
+                    .iter()
+                    .map(|r| format!("\"{}\"", r))
+                    .collect();
+                format!("[{}]", rules.join(", "))
             };
 
             format!(
@@ -135,13 +156,18 @@ impl Config {
                  \n\
                  # Ignore patterns (gitignore syntax)\n\
                  # Examples: [\"*.png\", \"*.ipynb\", \"dist/**\"]\n\
-                 ignore_patterns = {}\n",
+                 ignore_patterns = {}\n\
+                 \n\
+                 # Speed rules for different file types (pattern:milliseconds)\n\
+                 # Examples: [\"*.java:50\", \"*.xml:5\", \"*.rs:30\"]\n\
+                 speed_rules = {}\n",
                 self.theme,
                 self.speed,
                 self.background,
                 self.order,
                 self.loop_playback,
-                patterns_str
+                patterns_str,
+                speed_rules_str
             )
         };
 

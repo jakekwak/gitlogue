@@ -334,10 +334,11 @@ fn main() -> Result<()> {
         }
     };
 
-    // Parse speed rules from CLI arguments
+    // Parse speed rules: CLI args take priority, then config file
     let speed_rules: Vec<SpeedRule> = args
         .speed_rule
         .iter()
+        .chain(config.speed_rules.iter())
         .filter_map(|s| {
             SpeedRule::parse(s).or_else(|| {
                 eprintln!("Warning: Invalid speed rule '{}', skipping", s);
