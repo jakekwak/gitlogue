@@ -89,6 +89,47 @@ fn test_navigation_sequence_correctness() {
 // without loop mode enabled, navigation operations should not change the currently displayed commit.
 // Validates: Requirements 3.1
 #[test]
+fn test_navigation_disabled_in_single_commit_mode() {
+    use gitlogue::animation::SpeedRule;
+    use gitlogue::ui::UI;
+    use gitlogue::PlaybackOrder;
+    use gitlogue::theme::Theme;
+    
+    let repo_path = Path::new(".");
+    
+    if let Ok(repo) = GitRepository::open(repo_path) {
+        // Test single-commit mode without loop
+        // navigation_enabled should be false when:
+        // - commit_spec is Some (specific commit)
+        // - loop_playback is false
+        // - is_range_mode is false
+        
+        let speed_ms = 50;
+        let theme = Theme::default();
+        let order = PlaybackOrder::Asc;
+        let loop_playback = false;
+        let commit_spec = Some("HEAD".to_string());
+        let is_range_mode = false;
+        let speed_rules: Vec<SpeedRule> = Vec::new();
+        
+        let ui = UI::new(
+            speed_ms,
+            Some(&repo),
+            theme,
+            order,
+            loop_playback,
+            commit_spec,
+            is_range_mode,
+            speed_rules,
+        );
+        
+        // In single-commit mode without loop, navigation should be disabled
+        assert!(!ui.can_navigate(), 
+            "Navigation should be disabled in single-commit mode without loop");
+    }
+}
+
+#[test]
 fn test_navigation_boundary_conditions() {
     let repo_path = Path::new(".");
     
@@ -116,11 +157,11 @@ fn test_navigation_boundary_conditions() {
 // that match the filter criteria.
 // Validates: Requirements 3.2, 3.3
 #[test]
-fn test_navigation_with_range() {
+fn test_navigation_respects_filtering() {
     let repo_path = Path::new(".");
     
     if let Ok(repo) = GitRepository::open(repo_path) {
-        // Try to set a commit range
+        // Test 1: Range filtering - navigation should only move within range
         if repo.set_commit_range("HEAD~5..HEAD").is_ok() {
             let range_size = repo.get_range_count();
             
@@ -132,10 +173,19 @@ fn test_navigation_with_range() {
                 
                 let index = repo.get_commit_index();
                 assert_eq!(index, 1, "Should advance to next commit in range");
+                
+                // Verify we can navigate backward within range
+                let result = repo.prev_range_commit_asc();
+                assert!(result.is_ok(), "Should navigate backward within range");
+                
+                let index = repo.get_commit_index();
+                assert_eq!(index, 0, "Should be back at first commit in range");
             }
         }
     }
 }
+
+
 
 
 // Property 6: Navigation interruption

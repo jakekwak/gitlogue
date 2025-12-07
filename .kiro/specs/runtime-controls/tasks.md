@@ -77,7 +77,12 @@
   - **Property 6: Navigation interruption**
   - **Validates: Requirements 2.3**
 
-- [ ] 4. Add keyboard input handlers for runtime controls
+- [x] 4. Add keyboard input handlers for runtime controls
+
+
+
+
+
   - Add '+' and '=' key handlers to increase speed (decrease delay by 5ms)
   - Add '-' key handler to decrease speed (increase delay by 5ms)
   - Add 'N' and 'n' key handlers to navigate to next commit
@@ -86,15 +91,21 @@
   - Update animation engine speed when speed keys are pressed
   - _Requirements: 1.1, 1.2, 2.1, 2.2_
 
-- [ ] 4.1 Write property test for speed adjustment application
+- [x] 4.1 Write property test for speed adjustment application
+
+
   - **Property 2: Speed adjustment application**
   - **Validates: Requirements 1.3**
 
-- [ ] 4.2 Write property test for navigation disabled in single-commit mode
+- [x] 4.2 Write property test for navigation disabled in single-commit mode
+
+
   - **Property 7: Navigation disabled in single-commit mode**
   - **Validates: Requirements 3.1**
 
-- [ ] 4.3 Write property test for navigation respects filtering
+- [x] 4.3 Write property test for navigation respects filtering
+
+
   - **Property 8: Navigation respects filtering**
   - **Validates: Requirements 3.2, 3.3**
 

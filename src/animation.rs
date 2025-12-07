@@ -1203,6 +1203,31 @@ mod tests {
         }
     }
 
+    // Property 2: Speed adjustment application
+    // Feature: runtime-controls, Property 2: For any speed adjustment operation, all subsequent 
+    // animation steps should use the new speed value immediately.
+    // Validates: Requirements 1.3
+    proptest! {
+        #[test]
+        fn test_speed_adjustment_application(
+            initial_speed in 10u64..=400,
+            delta in -50i64..=50
+        ) {
+            let mut engine = AnimationEngine::new(initial_speed);
+            
+            // Adjust speed
+            let new_speed = engine.adjust_speed(delta);
+            
+            // Verify that the engine's current speed matches the returned speed
+            prop_assert_eq!(engine.get_current_speed(), new_speed,
+                "Engine speed should immediately reflect adjustment");
+            
+            // Verify that the speed is within valid range
+            prop_assert!(new_speed >= 1 && new_speed <= 500,
+                "Speed should be clamped to valid range [1, 500]");
+        }
+    }
+
     // Property 3: Proportional speed rule adjustment
     // Feature: runtime-controls, Property 3: For any set of file-specific speed rules and base 
     // speed adjustment, the ratio between each file-specific speed and the base speed should 

@@ -121,7 +121,7 @@ impl<'a> UI<'a> {
 
     /// Checks if navigation is allowed based on current configuration.
     /// Returns true if repository reference exists and not in single-commit mode.
-    fn can_navigate(&self) -> bool {
+    pub fn can_navigate(&self) -> bool {
         self.navigation_enabled
     }
 
@@ -324,6 +324,26 @@ impl<'a> UI<'a> {
                         }
                         KeyCode::Char('c') if key.modifiers.contains(KeyModifiers::CONTROL) => {
                             self.state = UIState::Finished;
+                        }
+                        KeyCode::Char('+') | KeyCode::Char('=') => {
+                            // Increase speed (decrease delay by 5ms)
+                            self.engine.adjust_speed(5);
+                        }
+                        KeyCode::Char('-') => {
+                            // Decrease speed (increase delay by 5ms)
+                            self.engine.adjust_speed(-5);
+                        }
+                        KeyCode::Char('N') | KeyCode::Char('n') => {
+                            // Navigate to next commit
+                            if self.can_navigate() {
+                                let _ = self.load_next_commit();
+                            }
+                        }
+                        KeyCode::Char('P') | KeyCode::Char('p') => {
+                            // Navigate to previous commit
+                            if self.can_navigate() {
+                                let _ = self.load_previous_commit();
+                            }
                         }
                         _ => {}
                     }
