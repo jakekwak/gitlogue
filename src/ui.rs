@@ -48,6 +48,7 @@ pub struct UI<'a> {
     loop_playback: bool,
     commit_spec: Option<String>,
     is_range_mode: bool,
+    navigation_enabled: bool,
 }
 
 impl<'a> UI<'a> {
@@ -69,6 +70,13 @@ impl<'a> UI<'a> {
         let mut engine = AnimationEngine::new(speed_ms);
         engine.set_speed_rules(speed_rules);
 
+        // Navigation is enabled when:
+        // - Repository reference exists AND
+        // - Either: range mode is active, OR loop mode is enabled, OR no specific commit is specified
+        // This implements Requirements 3.1, 3.2, 3.3
+        let navigation_enabled = repo.is_some()
+            && (is_range_mode || loop_playback || commit_spec.is_none());
+
         Self {
             state: UIState::Playing,
             speed_ms,
@@ -84,6 +92,7 @@ impl<'a> UI<'a> {
             loop_playback,
             commit_spec,
             is_range_mode,
+            navigation_enabled,
         }
     }
 
@@ -108,6 +117,12 @@ impl<'a> UI<'a> {
     pub fn load_commit(&mut self, metadata: CommitMetadata) {
         self.engine.load_commit(&metadata);
         self.state = UIState::Playing;
+    }
+
+    /// Checks if navigation is allowed based on current configuration.
+    /// Returns true if repository reference exists and not in single-commit mode.
+    fn can_navigate(&self) -> bool {
+        self.navigation_enabled
     }
 
     /// Runs the main UI event loop.
