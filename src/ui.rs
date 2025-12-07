@@ -125,6 +125,147 @@ impl<'a> UI<'a> {
         self.navigation_enabled
     }
 
+    /// Loads the next commit in the sequence based on playback order.
+    /// Handles wrapping in loop mode and boundary conditions in non-loop mode.
+    /// Resets animation state when loading a new commit.
+    fn load_next_commit(&mut self) -> Result<()> {
+        let repo = self.repo.ok_or_else(|| anyhow::anyhow!("No repository available"))?;
+
+        let result = if self.is_range_mode {
+            match self.order {
+                PlaybackOrder::Random => repo.random_range_commit(),
+                PlaybackOrder::Asc => repo.next_range_commit_asc(),
+                PlaybackOrder::Desc => repo.next_range_commit_desc(),
+            }
+        } else {
+            match self.order {
+                PlaybackOrder::Random => repo.random_commit(),
+                PlaybackOrder::Asc => repo.next_asc_commit(),
+                PlaybackOrder::Desc => repo.next_desc_commit(),
+            }
+        };
+
+        match result {
+            Ok(metadata) => {
+                self.load_commit(metadata);
+                Ok(())
+            }
+            Err(_) => {
+                // Reached end of sequence
+                if self.loop_playback {
+                    // Wrap to beginning
+                    repo.reset_index();
+                    let restart_result = if self.is_range_mode {
+                        match self.order {
+                            PlaybackOrder::Random => repo.random_range_commit(),
+                            PlaybackOrder::Asc => repo.next_range_commit_asc(),
+                            PlaybackOrder::Desc => repo.next_range_commit_desc(),
+                        }
+                    } else {
+                        match self.order {
+                            PlaybackOrder::Random => repo.random_commit(),
+                            PlaybackOrder::Asc => repo.next_asc_commit(),
+                            PlaybackOrder::Desc => repo.next_desc_commit(),
+                        }
+                    };
+                    match restart_result {
+                        Ok(metadata) => {
+                            self.load_commit(metadata);
+                            Ok(())
+                        }
+                        Err(e) => Err(e),
+                    }
+                } else {
+                    // Non-loop mode: stay at current commit
+                    Ok(())
+                }
+            }
+        }
+    }
+
+    /// Loads the previous commit in the sequence based on playback order.
+    /// Handles wrapping in loop mode and boundary conditions in non-loop mode.
+    /// Resets animation state when loading a new commit.
+    fn load_previous_commit(&mut self) -> Result<()> {
+        let repo = self.repo.ok_or_else(|| anyhow::anyhow!("No repository available"))?;
+
+        let result = if self.is_range_mode {
+            match self.order {
+                PlaybackOrder::Random => repo.random_range_commit(),
+                PlaybackOrder::Asc => repo.prev_range_commit_asc(),
+                PlaybackOrder::Desc => repo.prev_range_commit_desc(),
+            }
+        } else {
+            match self.order {
+                PlaybackOrder::Random => repo.random_commit(),
+                PlaybackOrder::Asc => repo.prev_asc_commit(),
+                PlaybackOrder::Desc => repo.prev_desc_commit(),
+            }
+        };
+
+        match result {
+            Ok(metadata) => {
+                self.load_commit(metadata);
+                Ok(())
+            }
+            Err(_) => {
+                // Reached beginning of sequence
+                if self.loop_playback {
+                    // Wrap to end - need to get the last commit
+                    // For this, we need to know the total count and set index to last
+                    if self.is_range_mode {
+                        let range = repo.commit_range.borrow();
+                        if let Some(commits) = range.as_ref() {
+                            let last_index = commits.len().saturating_sub(1);
+                            *repo.commit_index.borrow_mut() = last_index;
+                            
+                            let restart_result = match self.order {
+                                PlaybackOrder::Random => repo.random_range_commit(),
+                                PlaybackOrder::Asc => repo.next_range_commit_asc(),
+                                PlaybackOrder::Desc => repo.next_range_commit_desc(),
+                            };
+                            match restart_result {
+                                Ok(metadata) => {
+                                    self.load_commit(metadata);
+                                    Ok(())
+                                }
+                                Err(e) => Err(e),
+                            }
+                        } else {
+                            Ok(())
+                        }
+                    } else {
+                        // For full repository mode, we need to populate cache and get last
+                        repo.populate_cache()?;
+                        let cache = repo.commit_cache.borrow();
+                        if let Some(commits) = cache.as_ref() {
+                            let last_index = commits.len().saturating_sub(1);
+                            *repo.commit_index.borrow_mut() = last_index;
+                            
+                            let restart_result = match self.order {
+                                PlaybackOrder::Random => repo.random_commit(),
+                                PlaybackOrder::Asc => repo.next_asc_commit(),
+                                PlaybackOrder::Desc => repo.next_desc_commit(),
+                            };
+                            match restart_result {
+                                Ok(metadata) => {
+                                    self.load_commit(metadata);
+                                    Ok(())
+                                }
+                                Err(e) => Err(e),
+                            }
+                        } else {
+                            Ok(())
+                        }
+                    }
+                } else {
+                    // Non-loop mode: stay at current commit
+                    Ok(())
+                }
+            }
+        }
+    }
+
     /// Runs the main UI event loop.
     pub fn run(&mut self) -> Result<()> {
         enable_raw_mode()?;

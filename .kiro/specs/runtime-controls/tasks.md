@@ -34,8 +34,15 @@
   - Implement `can_navigate` method to check if navigation is allowed
   - _Requirements: 3.1, 3.2, 3.3_
 
-- [ ] 3. Implement commit navigation methods in UI
-  - [ ] 3.1 Implement `load_next_commit` method
+- [x] 3. Implement commit navigation methods in UI
+
+
+
+
+
+  - [x] 3.1 Implement `load_next_commit` method
+
+
     - Handle different playback orders (Random, Asc, Desc)
     - Handle range mode vs full repository mode
     - Implement wrapping logic for loop mode
@@ -43,7 +50,9 @@
     - Reset animation state when loading new commit
     - _Requirements: 2.1, 2.3, 2.4, 2.6_
 
-  - [ ] 3.2 Implement `load_previous_commit` method
+  - [x] 3.2 Implement `load_previous_commit` method
+
+
     - Handle different playback orders (Random, Asc, Desc)
     - Handle range mode vs full repository mode
     - Implement wrapping logic for loop mode
@@ -51,15 +60,20 @@
     - Reset animation state when loading new commit
     - _Requirements: 2.2, 2.3, 2.5, 2.7_
 
-- [ ] 3.3 Write property test for navigation wrapping behavior
+- [x] 3.3 Write property test for navigation wrapping behavior
+
+
   - **Property 4: Navigation wrapping behavior**
   - **Validates: Requirements 2.4, 2.5, 2.6, 2.7**
 
-- [ ] 3.4 Write property test for navigation sequence correctness
+- [x] 3.4 Write property test for navigation sequence correctness
+
   - **Property 5: Navigation sequence correctness**
   - **Validates: Requirements 2.1, 2.2**
 
-- [ ] 3.5 Write property test for navigation interruption
+- [x] 3.5 Write property test for navigation interruption
+
+
   - **Property 6: Navigation interruption**
   - **Validates: Requirements 2.3**
 

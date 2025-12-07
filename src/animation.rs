@@ -347,6 +347,11 @@ impl AnimationEngine {
         self.speed_ms
     }
 
+    /// Get the current animation step index
+    pub fn get_current_step(&self) -> usize {
+        self.current_step
+    }
+
     /// Sets the viewport height for scroll calculations.
     pub fn set_viewport_height(&mut self, height: usize) {
         self.viewport_height = height;

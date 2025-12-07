@@ -166,11 +166,11 @@ fn matches_date_filter(
 
 pub struct GitRepository {
     repo: Repository,
-    commit_cache: RefCell<Option<Vec<Oid>>>,
+    pub(crate) commit_cache: RefCell<Option<Vec<Oid>>>,
     // Shared index for both cache-based playback (asc/desc) and range playback.
     // These modes are mutually exclusive based on CLI arguments.
-    commit_index: RefCell<usize>,
-    commit_range: RefCell<Option<Vec<Oid>>>,
+    pub(crate) commit_index: RefCell<usize>,
+    pub(crate) commit_range: RefCell<Option<Vec<Oid>>>,
     author_filter: Option<String>,
     before_filter: Option<DateTime<Utc>>,
     after_filter: Option<DateTime<Utc>>,
@@ -385,6 +385,57 @@ impl GitRepository {
         *self.commit_index.borrow_mut() = 0;
     }
 
+    pub fn prev_asc_commit(&self) -> Result<CommitMetadata> {
+        self.populate_cache()?;
+
+        let cache = self.commit_cache.borrow();
+        let candidates = cache.as_ref().unwrap();
+        let mut index = self.commit_index.borrow_mut();
+
+        if candidates.is_empty() {
+            anyhow::bail!("No non-merge commits found in repository");
+        }
+
+        if *index == 0 {
+            anyhow::bail!("Already at first commit");
+        }
+
+        *index -= 1;
+
+        // Asc order: oldest first (reverse of cache order)
+        let asc_index = candidates.len() - 1 - *index;
+        let selected_oid = candidates
+            .get(asc_index)
+            .context("Failed to select commit")?;
+
+        let commit = self.repo.find_commit(*selected_oid)?;
+        Self::extract_metadata_with_changes(&self.repo, &commit)
+    }
+
+    pub fn prev_desc_commit(&self) -> Result<CommitMetadata> {
+        self.populate_cache()?;
+
+        let cache = self.commit_cache.borrow();
+        let candidates = cache.as_ref().unwrap();
+        let mut index = self.commit_index.borrow_mut();
+
+        if candidates.is_empty() {
+            anyhow::bail!("No non-merge commits found in repository");
+        }
+
+        if *index == 0 {
+            anyhow::bail!("Already at first commit");
+        }
+
+        *index -= 1;
+
+        // Desc order: newest first (same as cache order)
+        let selected_oid = candidates.get(*index).context("Failed to select commit")?;
+
+        let commit = self.repo.find_commit(*selected_oid)?;
+        Self::extract_metadata_with_changes(&self.repo, &commit)
+    }
+
     pub fn set_author_filter(&mut self, author: Option<String>) {
         self.author_filter = author;
     }
@@ -457,6 +508,50 @@ impl GitRepository {
         let selected_oid = commits
             .get(rand::rng().random_range(0..commits.len()))
             .context("Failed to select random commit")?;
+
+        let commit = self.repo.find_commit(*selected_oid)?;
+        Self::extract_metadata_with_changes(&self.repo, &commit)
+    }
+
+    pub fn prev_range_commit_asc(&self) -> Result<CommitMetadata> {
+        let range = self.commit_range.borrow();
+        let commits = range.as_ref().context("Commit range not set")?;
+        let mut index = self.commit_index.borrow_mut();
+
+        if commits.is_empty() {
+            anyhow::bail!("No commits in range");
+        }
+
+        if *index == 0 {
+            anyhow::bail!("Already at first commit in range");
+        }
+
+        *index -= 1;
+
+        let selected_oid = commits.get(*index).context("Failed to select commit")?;
+
+        let commit = self.repo.find_commit(*selected_oid)?;
+        Self::extract_metadata_with_changes(&self.repo, &commit)
+    }
+
+    pub fn prev_range_commit_desc(&self) -> Result<CommitMetadata> {
+        let range = self.commit_range.borrow();
+        let commits = range.as_ref().context("Commit range not set")?;
+        let mut index = self.commit_index.borrow_mut();
+
+        if commits.is_empty() {
+            anyhow::bail!("No commits in range");
+        }
+
+        if *index == 0 {
+            anyhow::bail!("Already at first commit in range");
+        }
+
+        *index -= 1;
+
+        // Desc order: newest first (reverse of asc)
+        let desc_index = commits.len() - 1 - *index;
+        let selected_oid = commits.get(desc_index).context("Failed to select commit")?;
 
         let commit = self.repo.find_commit(*selected_oid)?;
         Self::extract_metadata_with_changes(&self.repo, &commit)
@@ -546,7 +641,7 @@ impl GitRepository {
         Ok(commits)
     }
 
-    fn populate_cache(&self) -> Result<()> {
+    pub fn populate_cache(&self) -> Result<()> {
         let mut cache = self.commit_cache.borrow_mut();
         if cache.is_none() {
             let mut revwalk = self.repo.revwalk()?;
@@ -556,6 +651,29 @@ impl GitRepository {
             *cache = Some(candidates);
         }
         Ok(())
+    }
+
+    /// Get the number of commits in the cache (for testing)
+    pub fn get_commit_count(&self) -> Result<usize> {
+        self.populate_cache()?;
+        let cache = self.commit_cache.borrow();
+        Ok(cache.as_ref().map(|c| c.len()).unwrap_or(0))
+    }
+
+    /// Get the current commit index (for testing)
+    pub fn get_commit_index(&self) -> usize {
+        *self.commit_index.borrow()
+    }
+
+    /// Set the commit index (for testing)
+    pub fn set_commit_index(&self, index: usize) {
+        *self.commit_index.borrow_mut() = index;
+    }
+
+    /// Get the number of commits in the range (for testing)
+    pub fn get_range_count(&self) -> usize {
+        let range = self.commit_range.borrow();
+        range.as_ref().map(|r| r.len()).unwrap_or(0)
     }
 
     fn extract_metadata_with_changes(
