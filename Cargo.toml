@@ -71,6 +71,9 @@ tree-sitter-yaml = "0.7"
 tree-sitter-zig = "1.0"
 unicode-width = "0.2"
 
+[dev-dependencies]
+proptest = "1.5"
+
 [lib]
 name = "gitlogue"
 path = "src/lib.rs"

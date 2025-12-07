@@ -308,6 +308,45 @@ impl AnimationEngine {
         self.base_speed_ms
     }
 
+    /// Adjust the animation speed by the given delta (in milliseconds)
+    /// Positive delta increases speed (decreases delay), negative delta decreases speed (increases delay)
+    /// Speed is clamped between 1ms and 500ms
+    /// Returns the new speed value after adjustment
+    pub fn adjust_speed(&mut self, delta: i64) -> u64 {
+        // Calculate new base speed
+        let new_base_speed = if delta < 0 {
+            self.base_speed_ms.saturating_add(delta.unsigned_abs())
+        } else {
+            self.base_speed_ms.saturating_sub(delta as u64)
+        };
+        
+        // Clamp to valid range [1, 500]
+        let clamped_base_speed = new_base_speed.clamp(1, 500);
+        
+        // Calculate the ratio for proportional adjustment
+        let ratio = clamped_base_speed as f64 / self.base_speed_ms as f64;
+        
+        // Update base speed
+        self.base_speed_ms = clamped_base_speed;
+        
+        // Update current speed proportionally
+        let new_speed = (self.speed_ms as f64 * ratio).round() as u64;
+        self.speed_ms = new_speed.clamp(1, 500);
+        
+        // Update all file-specific speed rules proportionally
+        for rule in &mut self.speed_rules {
+            let new_rule_speed = (rule.speed_ms as f64 * ratio).round() as u64;
+            rule.speed_ms = new_rule_speed.clamp(1, 500);
+        }
+        
+        self.speed_ms
+    }
+
+    /// Get the current animation speed in milliseconds
+    pub fn get_current_speed(&self) -> u64 {
+        self.speed_ms
+    }
+
     /// Sets the viewport height for scroll calculations.
     pub fn set_viewport_height(&mut self, height: usize) {
         self.viewport_height = height;
@@ -1114,5 +1153,101 @@ impl AnimationEngine {
     /// Returns true if the animation has completed.
     pub fn is_finished(&self) -> bool {
         self.state == AnimationState::Finished
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use proptest::prelude::*;
+
+    // Property 1: Speed adjustment increments
+    // Feature: runtime-controls, Property 1: For any current speed value, when a speed increase 
+    // is requested, the new speed should be exactly 5 milliseconds less than the current speed 
+    // (unless the current speed is less than or equal to 5ms, in which case it should be clamped 
+    // to 1ms), and when a speed decrease is requested, the new speed should be exactly 5 milliseconds 
+    // more than the current speed (unless the current speed is greater than or equal to 495ms, 
+    // in which case it should be clamped to 500ms).
+    // Validates: Requirements 1.1, 1.2, 1.4, 1.5
+    proptest! {
+        #[test]
+        fn test_speed_adjustment_increments(initial_speed in 1u64..=500) {
+            // Test speed increase (decrease delay by 5ms)
+            let mut engine = AnimationEngine::new(initial_speed);
+            let new_speed = engine.adjust_speed(5);
+            
+            if initial_speed <= 5 {
+                // Should clamp to 1ms
+                prop_assert_eq!(new_speed, 1);
+            } else {
+                // Should decrease by exactly 5ms
+                prop_assert_eq!(new_speed, initial_speed - 5);
+            }
+            
+            // Test speed decrease (increase delay by 5ms)
+            let mut engine = AnimationEngine::new(initial_speed);
+            let new_speed = engine.adjust_speed(-5);
+            
+            if initial_speed >= 495 {
+                // Should clamp to 500ms
+                prop_assert_eq!(new_speed, 500);
+            } else {
+                // Should increase by exactly 5ms
+                prop_assert_eq!(new_speed, initial_speed + 5);
+            }
+        }
+    }
+
+    // Property 3: Proportional speed rule adjustment
+    // Feature: runtime-controls, Property 3: For any set of file-specific speed rules and base 
+    // speed adjustment, the ratio between each file-specific speed and the base speed should 
+    // remain constant before and after the adjustment (within integer rounding tolerance of ±1ms).
+    // Validates: Requirements 4.1, 4.2, 4.3
+    proptest! {
+        #[test]
+        fn test_proportional_speed_rule_adjustment(
+            base_speed in 10u64..=400,
+            rule_speeds in prop::collection::vec(10u64..=400, 1..=5),
+            delta in -50i64..=50
+        ) {
+            let mut engine = AnimationEngine::new(base_speed);
+            
+            // Create speed rules with different speeds
+            let mut rules = Vec::new();
+            for (i, &speed) in rule_speeds.iter().enumerate() {
+                let pattern = format!("*.test{}", i);
+                if let Ok(glob) = globset::Glob::new(&pattern) {
+                    rules.push(SpeedRule {
+                        matcher: glob.compile_matcher(),
+                        speed_ms: speed,
+                    });
+                }
+            }
+            
+            engine.set_speed_rules(rules);
+            
+            // Store original speeds and ratios
+            let original_base = engine.base_speed_ms;
+            let original_rule_speeds: Vec<u64> = engine.speed_rules.iter()
+                .map(|rule| rule.speed_ms)
+                .collect();
+            
+            // Adjust speed
+            let new_base = engine.adjust_speed(delta);
+            
+            // Check that each rule speed changed proportionally (within ±1ms tolerance)
+            for (original_speed, rule) in original_rule_speeds.iter().zip(engine.speed_rules.iter()) {
+                // Calculate expected new speed based on ratio
+                let ratio = *original_speed as f64 / original_base as f64;
+                let expected_speed = (new_base as f64 * ratio).round() as u64;
+                let expected_clamped = expected_speed.clamp(1, 500);
+                
+                // Check that actual speed is within ±1ms of expected (accounting for rounding)
+                let diff = (rule.speed_ms as i64 - expected_clamped as i64).abs();
+                prop_assert!(diff <= 1, 
+                    "Speed rule adjustment outside tolerance: expected {} (±1ms), got {} (diff: {}ms)",
+                    expected_clamped, rule.speed_ms, diff);
+            }
+        }
     }
 }
