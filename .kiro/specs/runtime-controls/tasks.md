@@ -109,5 +109,10 @@
   - **Property 8: Navigation respects filtering**
   - **Validates: Requirements 3.2, 3.3**
 
-- [ ] 5. Checkpoint - Ensure all tests pass
+- [x] 5. Checkpoint - Ensure all tests pass
+
+
+
+
+
   - Ensure all tests pass, ask the user if questions arise.
