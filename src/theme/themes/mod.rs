@@ -12,6 +12,7 @@ mod one_dark;
 mod rose_pine;
 mod solarized_dark;
 mod solarized_light;
+mod telemetry;
 mod tokyo_night;
 
 pub use ayu_dark::ayu_dark;
@@ -28,4 +29,5 @@ pub use one_dark::one_dark;
 pub use rose_pine::rose_pine;
 pub use solarized_dark::solarized_dark;
 pub use solarized_light::solarized_light;
+pub use telemetry::telemetry;
 pub use tokyo_night::tokyo_night;

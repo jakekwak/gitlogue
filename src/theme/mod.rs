@@ -85,9 +85,10 @@ impl Theme {
             "rose-pine" => Ok(themes::rose_pine()),
             "solarized-dark" => Ok(themes::solarized_dark()),
             "solarized-light" => Ok(themes::solarized_light()),
+            "telemetry" => Ok(themes::telemetry()),
             "tokyo-night" => Ok(themes::tokyo_night()),
             _ => Err(anyhow::anyhow!("Unknown theme: {}", name))
-                .context("Available themes: ayu-dark, catppuccin, dracula, everforest, github-dark, gruvbox, material, monokai, night-owl, nord, one-dark, rose-pine, solarized-dark, solarized-light, tokyo-night"),
+                .context("Available themes: ayu-dark, catppuccin, dracula, everforest, github-dark, gruvbox, material, monokai, night-owl, nord, one-dark, rose-pine, solarized-dark, solarized-light, telemetry, tokyo-night"),
         }
     }
 
@@ -115,6 +116,7 @@ impl Theme {
             "rose-pine",
             "solarized-dark",
             "solarized-light",
+            "telemetry",
             "tokyo-night",
         ]
     }

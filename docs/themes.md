@@ -1,6 +1,6 @@
 # Theme Customization Guide
 
-gitlogue provides a rich theming system with 15 beautiful built-in themes and support for custom theme configuration.
+gitlogue provides a rich theming system with 16 beautiful built-in themes and support for custom theme configuration.
 
 ## Table of Contents
 
@@ -14,7 +14,7 @@ gitlogue provides a rich theming system with 15 beautiful built-in themes and su
 
 ## Built-in Themes
 
-gitlogue comes with 15 carefully crafted themes optimized for code readability and visual appeal:
+gitlogue comes with 16 carefully crafted themes optimized for code readability and visual appeal:
 
 ### Dark Themes
 
@@ -31,6 +31,7 @@ gitlogue comes with 15 carefully crafted themes optimized for code readability a
 - **one-dark** - Inspired by Atom's One Dark theme. Clean and professional with excellent syntax highlighting.
 - **rose-pine** - Elegant pastel theme with purple and pink tones. Soft and sophisticated color scheme.
 - **solarized-dark** - The legendary Solarized theme (dark variant). Scientifically designed for optimal readability.
+- **telemetry** - Dark theme with muted teals and warm accents. Color palette by [bjarneo](https://github.com/bjarneo) from [Aether](https://aethr.no).
 - **tokyo-night** (default) - Modern dark theme inspired by Tokyo's neon nights. Balanced contrast with blue and purple accents.
 
 ### Light Themes
@@ -229,6 +230,7 @@ color_name = { r = 255, g = 100, b = 50 }
 - **night-owl** - Designed specifically for night use
 - **tokyo-night** - Modern with balanced contrast
 - **monokai** - Classic warm tones
+- **telemetry** - Muted teals for comfortable night coding
 
 ### For Bright Environments
 - **solarized-light** - Optimized for well-lit spaces
