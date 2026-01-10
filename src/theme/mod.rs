@@ -106,7 +106,7 @@ impl Theme {
             "ayu-dark",
             "catppuccin",
             "dracula",
-            "fluorite"
+            "fluorite",
             "everforest",
             "github-dark",
             "gruvbox",
