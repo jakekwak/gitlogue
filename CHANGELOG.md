@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] - 2026-01-16
+
+### ✨ Features
+
+- feat(themes): add fluorite theme ([48f0e11](https://github.com/unhappychoice/gitlogue/commit/48f0e11))
+- feat: add uv.lock to the excluded files ([ca92dc0](https://github.com/unhappychoice/gitlogue/commit/ca92dc0))
+- feat: add diff subcommand to visualize working tree changes (#123) ([7805317](https://github.com/unhappychoice/gitlogue/commit/7805317))
+
+### 🐛 Bug Fixes
+
+- fix(themes): apply cargo fmt and fix alphabetical order ([e5ab941](https://github.com/unhappychoice/gitlogue/commit/e5ab941))
+- fix(themes): apply 'coderabbit' suggested style changes ([aa4545e](https://github.com/unhappychoice/gitlogue/commit/aa4545e))
+- fix(themes): add missing comma ([d2bf885](https://github.com/unhappychoice/gitlogue/commit/d2bf885))
+
+### 📝 Other Changes
+
+- chore: bump version to v0.7.0 ([8d1df29](https://github.com/unhappychoice/gitlogue/commit/8d1df29))
+- chore(deps): bump chrono from 0.4.42 to 0.4.43 ([7ec94ad](https://github.com/unhappychoice/gitlogue/commit/7ec94ad))
+- chore(deps): bump toml from 0.9.10+spec-1.1.0 to 0.9.11+spec-1.1.0 ([b79396f](https://github.com/unhappychoice/gitlogue/commit/b79396f))
+- chore(deps): bump tree-sitter-md from 0.5.1 to 0.5.2 ([45b031e](https://github.com/unhappychoice/gitlogue/commit/45b031e))
+- chore(deps): bump clap from 4.5.53 to 4.5.54 ([12f034e](https://github.com/unhappychoice/gitlogue/commit/12f034e))
+- chore(deps): bump tree-sitter-lua from 0.2.0 to 0.4.1 ([5db6d54](https://github.com/unhappychoice/gitlogue/commit/5db6d54))
+- chore(deps): bump ratatui from 0.29.0 to 0.30.0 ([9de4c9b](https://github.com/unhappychoice/gitlogue/commit/9de4c9b))
+- chore(deps): bump toml from 0.9.8 to 0.9.10+spec-1.1.0 ([a033d22](https://github.com/unhappychoice/gitlogue/commit/a033d22))
+- chore(deps): bump toml_edit from 0.23.9 to 0.24.0+spec-1.1.0 ([a4a6e9c](https://github.com/unhappychoice/gitlogue/commit/a4a6e9c))
+- chore: update flake.nix hashes for v0.6.0 ([7545577](https://github.com/unhappychoice/gitlogue/commit/7545577))
+
+
 ## [0.6.0] - 2025-12-08
 
 ### ✨ Features
@@ -20,7 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 📝 Other Changes
 
-- chore: bump version to v0.6.0 ([320d778](https://github.com/unhappychoice/gitlogue/commit/320d778))
+- chore: bump version to v0.6.0 ([4e065c1](https://github.com/unhappychoice/gitlogue/commit/4e065c1))
 - docs: add telemetry theme to themes documentation ([bb5ebbe](https://github.com/unhappychoice/gitlogue/commit/bb5ebbe))
 - chore(deps): bump git2 from 0.20.2 to 0.20.3 ([28cb068](https://github.com/unhappychoice/gitlogue/commit/28cb068))
 - chore(deps): bump toml_edit from 0.23.7 to 0.23.9 ([d12df6a](https://github.com/unhappychoice/gitlogue/commit/d12df6a))
